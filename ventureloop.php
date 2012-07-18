@@ -15,6 +15,8 @@
 		public $session_expires;
 		public $session_path;
 
+		public $results;
+
 		const SEARCH_IN_JOB_DESCRIPTION = 'jd';
 		const SEARCH_IN_JOB_TITLE = 'jt';
 		const SEARCH_IN_COMPANY_NAME = 'jc';
@@ -312,8 +314,55 @@
 			// and finally, the jobs!
 			$results->jobs = $jobs;
 
+			// save the results we just got
+			$this->results = $results;
+
 			// i've done what you wanted, please, can i go home now?
-			return $results;
+			return $this;
+
+		}
+
+		private function can_get_more ( ) {
+
+			// make sure we've actually searched for something, first
+			if ( $this->results == null ) {
+				throw new LogicException('You requested more results, but it looks like we haven\'t searched for anything yet!');
+			}
+
+			// also, make sure there are more to get
+			if ( $this->results->current_page == $this->results->total_pages ) {
+				throw new OutOfBoundsException('You requested more results, but there aren\'t any to get!');
+			}
+
+		}
+
+		/**
+		 * Get the next page of search results.
+		 *
+		 * @param  boolean $overwrite If true, the result object will only contain jobs from the new page (ie: the old ones were overwritten). If false, it will contain a merged array of all the jobs we've gotten so far for this search.
+		 * @return VentureLoop             The current object, for factory-pattern chaining.
+		 */
+		public function get_next_page ( $overwrite = false ) {
+
+			// run our sanity checks to make sure we can actually get more
+			$this->can_get_more();
+
+			// save the last search we performed before it's overwritten
+			$results = $this->results;
+
+			$next_page = $this->results->current_page + 1;
+
+			// and do the search again, for the next page
+			$this->search( $this->results->keywords, $this->results->location, $next_page );
+
+			// now $this->results has been overwritten with the next page of results. did we want to overwrite the old ones, or merge the new ones on top of them?
+			if ( $overwrite != true ) {
+				$full_results = array_merge( $results->jobs, $this->results->jobs );
+
+				$this->results->jobs = $full_results;
+			}
+
+			return $this;
 
 		}
 
