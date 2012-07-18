@@ -387,6 +387,16 @@
 
 		}
 
+		public function jobs ( ) {
+
+			if ( $this->results == null ) {
+				throw new LogicException('You want the jobs? Well, you have to search for something first!');
+			}
+
+			return $this->results->jobs;
+
+		}
+
 		private function extract_number_jobs ( $xpath ) {
 
 			$number = null;
