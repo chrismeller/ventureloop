@@ -366,6 +366,27 @@
 
 		}
 
+		public function get_all ( ) {
+
+			// make sure we've already gotten some results
+			$this->can_get_more();
+
+			// now this sucks - basically, you could search, then get_next_page(true), so $results->jobs only contains the last page's results
+			// but we're called get_all, and i'd expect that to return ALL the results, wouldn't i? if not, i'd be called get_rest or something equally stupid.
+			// so we start over at 1 :\
+
+			// first, run the main search again so we know we're at page 1 and there aren't other results mucking up the works
+			$this->search( $this->results->keywords, $this->results->location, 1 );
+
+			// now, just wrap around get_next_page until we're done
+			for ( $i = 2; $i <= $this->results->total_pages; $i++ ) {
+				$this->get_next_page();
+			}
+
+			return $this;
+
+		}
+
 		private function extract_number_jobs ( $xpath ) {
 
 			$number = null;
