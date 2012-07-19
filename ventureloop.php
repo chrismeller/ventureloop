@@ -2,6 +2,8 @@
 
 	class VentureLoop {
 
+		const VERSION = '0.1';
+
 		const BASE_URL = 'https://ventureloop.com/ventureloop/';
 
 		private $email;
