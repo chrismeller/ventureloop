@@ -1,5 +1,8 @@
 <?php
 
+	// remember to use utf-8 -- you'll get some special characters back in the results
+	header('Content-Type: text/html; charset=utf-8' );
+
 	date_default_timezone_set('America/Chicago');
 
 	require('ventureloop.php');
