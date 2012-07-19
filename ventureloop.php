@@ -2,6 +2,8 @@
 
 	class VentureLoop {
 
+		const BASE_URL = 'https://ventureloop.com/ventureloop/';
+
 		private $email;
 		private $password;
 
@@ -99,7 +101,7 @@
 
 			$context = stream_context_create( $options );
 
-			$url = 'https://www.ventureloop.com/ventureloop/login.php';
+			$url = self::BASE_URL . 'login.php';
 
 			$contents = file_get_contents( $url, false, $context );
 
@@ -238,7 +240,7 @@
 
 			$query = http_build_query( $query );
 
-			$url = 'https://www.ventureloop.com/ventureloop/job_search_results.php?' . $query;
+			$url = self::BASE_URL . 'job_search_results.php?' . $query;
 
 			$options = array(
 				'http' => array(
@@ -615,7 +617,7 @@
 			if ( $name == 'url' ) {
 
 				if ( isset( $this->type ) && isset( $this->url_maps[ $this->type ]) ) {
-					$url = $this->url_maps[ $this->type ];
+					$url = VentureLoop::BASE_URL . $this->url_maps[ $this->type ];
 					$url = sprintf( $url, $this->id );
 
 					return $url;
