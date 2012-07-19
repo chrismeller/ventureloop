@@ -9,7 +9,7 @@ If your goal is to create an RSS feed of recent jobs that match your search you 
 License
 -------
 
-	Copyright 2011 Chris Meller
+	Copyright 2012 Chris Meller
 	
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
