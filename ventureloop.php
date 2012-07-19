@@ -628,7 +628,7 @@
 	}
 
 	abstract class VentureLoop_URL_Addressable {
-		protected $url;
+		private $url;		// private to trigger __get
 		protected $type;
 
 		protected $url_maps = array(
@@ -647,35 +647,38 @@
 
 					return $url;
 				}
-				else {
-					return null;
-				}
 
 			}
 
-			return parent::__get( $url );
+			return null;
 
 		}
 	}
 
 	abstract class VentureLoop_Entity extends VentureLoop_URL_Addressable {
 		public $id;
-		public $url;
+		private $url;
 		public $name;
 	}
 
 	class VentureLoop_Job extends VentureLoop_Entity {
 		public $id;
-		public $url;
+		private $url;
 		public $title;
 		public $posted_on;
 		public $company;
 		public $investors = array();
+
+		protected $type = 'job';
 	}
 
-	class VentureLoop_Investor extends VentureLoop_Entity {}
+	class VentureLoop_Investor extends VentureLoop_Entity {
+		protected $type = 'investor';
+	}
 
-	class VentureLoop_Company extends VentureLoop_Entity {}
+	class VentureLoop_Company extends VentureLoop_Entity {
+		protected $type = 'company';
+	}
 
 	class VentureLoop_Results {
 		// where are we and where can we go?
