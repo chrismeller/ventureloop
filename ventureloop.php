@@ -514,7 +514,27 @@
 						}
 						else {
 							// otherwise, just the content is fine
-							$cells[] = $td->nodeValue;
+
+							// sometimes fields like Location might have line break tags in them, and we want to turn those into an array of items instead, so we have to do some work for it
+							if ( $td->hasChildNodes() && $td->childNodes->length > 1 ) {
+
+								$children = array();
+								foreach ( $td->childNodes as $child_node ) {
+
+									// we only want the textual nodes, though
+									if ( $child_node->nodeType == XML_TEXT_NODE ) {
+										$children[] = $child_node->nodeValue;
+									}
+
+								}
+
+								$cells[] = $children;
+
+							}
+							else {
+								// if there are no child nodes, just the text please
+								$cells[] = $td->nodeValue;
+							}
 						}
 
 					}
@@ -577,9 +597,16 @@
 
 				}
 
-				// and finally the title and location
-				$job_title = array_shift( $job['job_title'] );
+				// next, location - or locations, it could be an array
 				$location = $job['location'];
+
+				// we always want to make sure location is an array, even if there's only one item
+				if ( !is_array( $location ) ) {
+					$location = array( $location );
+				}
+
+				// and finally the title
+				$job_title = array_shift( $job['job_title'] );
 
 				// and build our custom structure
 				$j = new VentureLoop_Job();
