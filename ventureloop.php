@@ -142,10 +142,6 @@
 			// now we parse out the cookie header
 			// first, hammer it into a format we can parse easily
 			$session = str_replace( ';', '&', $session );
-			echo $session;
-
-			parse_str( $session, $pieces );
-			print_r($pieces);
 
 			// keys should now be COOKIE_NAME, expires, and path
 			$keys = array_keys( $pieces );
