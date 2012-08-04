@@ -2,12 +2,12 @@
 
 	class VentureLoop {
 
-		const VERSION = '0.1';
+		const VERSION = '0.1.1';
 
 		const BASE_URL = 'https://ventureloop.com/ventureloop/';
 
-		private $email;
-		private $password;
+		public $email;
+		public $password;
 
 		public $distance = 20;
 		public $categories = array( self::CATEGORY_ALL_FUNCTIONS );
@@ -617,11 +617,79 @@
 				$j->investors = $investors;
 				$j->location = $location;
 
+				$j->ventureloop = $this;
+
 				$cleaned_jobs[] = $j;
 
 			}
 
 			return $cleaned_jobs;
+
+		}
+
+		public function get_job_details ( $job ) {
+
+			$contents = file_get_contents( $job->url );
+
+			if ( $contents === false ) {
+				return false;
+			}
+
+			// now we want to extract the information we got back
+			$dom = new DOMDocument( '1.0', 'utf-8' );
+			$dom->validateOnParse = false;
+
+			// this is only a partial document, and VERY VERY invalid
+			@$dom->loadHTML( $contents );
+
+			$xpath = new DOMXPath( $dom );
+
+			// first, get the address of the company
+			$address = $xpath->query( './/td[@class="ls" and text()="Location:"]/following-sibling::td' );
+			if ( $address->length == 0 ) {
+				$address = null;
+			}
+			else {
+				$address = $this->inner_html( $address->item(0) );
+			}
+
+			// now, the job description
+			$description = $xpath->query( './/div[@class="largeBubble" and text()="Description:"]/following-sibling::div' );
+			if ( $description->length == 0 ) {
+				$description = null;
+			}
+			else {
+				$description = $this->inner_html( $description->item(0) );
+			}
+
+			// and finally the duration
+			$duration = $xpath->query( './/div[@class="shortBubble" and text()="Duration:"]/following-sibling::div' );
+			if ( $duration->length == 0 ) {
+				$duration = null;
+			}
+			else {
+				$duration = $this->inner_html( $duration->item(0) );
+			}
+
+			$result = array(
+				'address' => $address,
+				'description' => $description,
+				'duration' => $duration,
+			);
+
+			return $result;
+
+		}
+
+		private function inner_html ( $node ) {
+
+			$dom = new DOMDocument();
+
+			foreach ( $node->childNodes as $child ) {
+				$dom->appendChild( $dom->importNode( $child, true ) );
+			}
+
+			return $dom->saveHTML();
 
 		}
 
@@ -668,8 +736,35 @@
 		public $posted_on;
 		public $company;
 		public $investors = array();
+		public $location;
 
 		protected $type = 'job';
+
+		protected $duration;
+		protected $description;
+		protected $address;
+
+		public function __get ( $name ) {
+
+			if ( in_array( $name, array( 'duration', 'description', 'address' ) ) ) {
+
+				if ( $this->$name == null ) {
+					$details = $this->ventureloop->get_job_details( $this );
+
+					if ( $details !== false ) {
+						$this->duration = $details['duration'];
+						$this->description = $details['description'];
+						$this->address = $details['address'];
+					}
+				}
+
+				return $this->$name;
+
+			}
+
+			return parent::__get( $name );
+
+		}
 	}
 
 	class VentureLoop_Investor extends VentureLoop_Entity {
