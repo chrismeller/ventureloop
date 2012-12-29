@@ -42,6 +42,19 @@
 	// add it to the feed node
 	$feed->appendChild( $link );
 
+	// add the "required" "self" link node
+
+	// first we have to figure out what the URL actually is
+	$self_proto = ( isset( $_SERVER['HTTPS'] ) && !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) ? 'https://' : 'http://';
+	$self_host = ( isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'] );	// HTTP_HOST is not set for HTTP/1.0 requests
+	$self_url = $self_proto . $self_host . $_SERVER['REQUEST_URI'];
+	$self_link = $dom->createElement( 'link' );
+	$self_link->setAttribute( 'href', $self_url );
+	$self_link->setAttribute( 'rel', 'self' );
+
+	// and add it to the feed
+	$feed->appendChild( $self_link );
+
 	// figure out the last updated date - should be the posted date of the first job, if we have one
 	if ( count( $jobs ) > 0 ) {
 		$last_updated = $jobs[0]->posted_on;
