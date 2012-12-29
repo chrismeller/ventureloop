@@ -1,6 +1,8 @@
 <?php
 
-	header( 'Content-Type: application/atom+xml; charset=utf-8' );
+	// this doesn't work for a lot of crappier clients
+	//header( 'Content-Type: application/atom+xml; charset=utf-8' );
+	header( 'Content-Type: text/xml' );
 
 	date_default_timezone_set('America/New_York');
 
