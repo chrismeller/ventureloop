@@ -30,7 +30,8 @@
 
 	// create the title node
 	$title_text = implode( ' in ', array( $v->results->keywords, $v->results->location ) );
-	$title = $dom->createElement( 'title', 'VentureLoop - ' . $title_text );
+	$title = $dom->createElement( 'title' );
+	$title->appendChild( $dom->createTextNode( 'VentureLoop - ' . $title_text ) );
 
 	// add the title to the feed node
 	$feed->appendChild( $title );
@@ -89,7 +90,8 @@
 
 		$entry = $dom->createElement( 'entry' );
 
-		$title = $dom->createElement( 'title', $job->title . ' at ' . $job->company->name );
+		$title = $dom->createElement( 'title' );
+		$title->appendChild( $dom->createTextNode( $job->title . ' at ' . $job->company->name ) );
 
 		$link = $dom->createElement( 'link' );
 		$link->setAttribute( 'href', $job->url );
@@ -100,7 +102,8 @@
 
 		$updated = $dom->createElement( 'updated', $job->posted_on->format( DateTime::ATOM ) );
 
-		$summary = $dom->createElement( 'summary', htmlspecialchars( $job->description ) );
+		$summary = $dom->createElement( 'summary' );
+		$summary->appendChild( $dom->createTextNode( $job->description ) );
 		$summary->setAttribute( 'type', 'html' );
 
 		$entry->appendChild( $title );
