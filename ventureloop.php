@@ -330,7 +330,7 @@
 			}
 
 			// also, make sure there are more to get
-			if ( $this->results->current_page == $this->results->total_pages ) {
+			if ( $this->results->current_page != null && $this->results->total_pages != null && $this->results->current_page == $this->results->total_pages ) {
 				throw new OutOfBoundsException('You requested more results, but there aren\'t any to get!');
 			}
 
